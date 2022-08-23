@@ -1,11 +1,11 @@
 package cgo
 
 import (
+	"github.com/pkg/errors"
 	"unsafe"
 
 	blocks "github.com/ipfs/go-block-format"
 	"github.com/ipfs/go-cid"
-	blockstore "github.com/ipfs/go-ipfs-blockstore"
 )
 
 /*
@@ -40,7 +40,7 @@ func cgo_blockstore_get(handle C.uint64_t, k C.buf_t, kLen C.int32_t, block **C.
 	switch err {
 	case nil:
 		return 0
-	case blockstore.ErrNotFound:
+	case errors.New("blockstore: block not found"):
 		return ErrNotFound
 	default:
 		return ErrIO
@@ -117,7 +117,7 @@ func cgo_blockstore_has(handle C.uint64_t, k C.buf_t, kLen C.int32_t) C.int32_t 
 	has, err := externs.Has(ctx, c)
 	switch err {
 	case nil:
-	case blockstore.ErrNotFound:
+	case errors.New("blockstore: block not found"):
 		// Some old blockstores still return this.
 		return 0
 	default:
